@@ -1,7 +1,7 @@
 import Guest from "../models/Guest";
 import { Request, Response } from 'express';
 import List from "../models/List";
-import mongoose from 'mongoose';
+import Event from "../models/Event";
 
 
 export const addGuest = async (req:Request | any , res: Response | any) =>{
@@ -14,19 +14,23 @@ export const addGuest = async (req:Request | any , res: Response | any) =>{
 
         if(!isOpen.abierta) return res.status(403).json({message: "no se puede agregar, la lista esta cerrada"})
 
-        const isGuest = await Guest.find({eventoId,dni:dniNumber})
+        // const isGuest = await Guest.find({eventoId,dni:dniNumber})
+        const existingGuest = await Guest.findOne({ dni: dniNumber, eventoId: eventoId});
 
-        console.log(isGuest)
+        if(existingGuest){
+            console.log("existe")
+            
+            res.status(209).json({message: `El dni ${dni} ya esta registrado`})
+            
+        }else{
+            const newGuest = new Guest({nombre, dni: dniNumber, listaId, eventoId});
+           
+            await newGuest.save();  
 
-        if(isGuest.length) return res.status(201).json({message: `El dni ${dni} ya esta registrado`})
-
-        const newGuest = new Guest({nombre, dni: dniNumber, listaId, eventoId});
-        await newGuest.save();
-
-        await List.findByIdAndUpdate(listaId, { $push: { invitados: newGuest._id } });
-
-
-        res.status(200).json({message: 'Guest added successfully', guest: newGuest});
+            await List.findByIdAndUpdate(listaId, { $push: { invitados: newGuest._id } });
+            await Event.findByIdAndUpdate(eventoId, { $push: { invitados: newGuest._id } });
+            res.status(200).json({message: 'Guest added successfully', guest: newGuest});
+        }
     }catch(error:any){
         console.error(error);
         res.status(500).json({message: 'Error adding guest', error: error.message});
