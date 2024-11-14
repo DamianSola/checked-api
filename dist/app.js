@@ -15,7 +15,7 @@ const listRoutes_1 = __importDefault(require("./routes/listRoutes"));
 const guestRoutes_1 = __importDefault(require("./routes/guestRoutes"));
 dotenv_1.default.config();
 const corsOptions = {
-    origin: 'http://localhost:3000', // Reemplaza con la URL de tu frontend
+    origin: process.env.CORS_URL, // Reemplaza con la URL de tu frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 };
