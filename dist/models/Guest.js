@@ -9,5 +9,5 @@ const guestSchema = new mongoose_1.Schema({
     horaIngreso: { type: Date, default: Date.now },
     eventoId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Event', required: true }
 }, { timestamps: true });
-guestSchema.index({ dni: 1, eventoId: 1 }, { unique: true });
+// guestSchema.index({ dni: 1, eventoId: 1 });
 exports.default = (0, mongoose_1.model)('Guest', guestSchema);

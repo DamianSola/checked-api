@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CheckGuest = exports.findByDni = exports.getGuestByEvent = exports.getGuestByList = exports.deleteGuest = exports.addGuest = void 0;
 const Guest_1 = __importDefault(require("../models/Guest"));
 const List_1 = __importDefault(require("../models/List"));
+const Event_1 = __importDefault(require("../models/Event"));
 const addGuest = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { nombre, dni, listaId, eventoId } = req.body;
@@ -22,14 +23,19 @@ const addGuest = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const isOpen = yield List_1.default.findById(listaId);
         if (!isOpen.abierta)
             return res.status(403).json({ message: "no se puede agregar, la lista esta cerrada" });
-        const isGuest = yield Guest_1.default.find({ eventoId, dni: dniNumber });
-        console.log(isGuest);
-        if (isGuest.length)
-            return res.status(201).json({ message: `El dni ${dni} ya esta registrado` });
-        const newGuest = new Guest_1.default({ nombre, dni: dniNumber, listaId, eventoId });
-        yield newGuest.save();
-        yield List_1.default.findByIdAndUpdate(listaId, { $push: { invitados: newGuest._id } });
-        res.status(200).json({ message: 'Guest added successfully', guest: newGuest });
+        // const isGuest = await Guest.find({eventoId,dni:dniNumber})
+        const existingGuest = yield Guest_1.default.findOne({ dni: dniNumber, eventoId: eventoId });
+        if (existingGuest) {
+            console.log("existe");
+            res.status(209).json({ message: `El dni ${dni} ya esta registrado` });
+        }
+        else {
+            const newGuest = new Guest_1.default({ nombre, dni: dniNumber, listaId, eventoId });
+            yield newGuest.save();
+            yield List_1.default.findByIdAndUpdate(listaId, { $push: { invitados: newGuest._id } });
+            yield Event_1.default.findByIdAndUpdate(eventoId, { $push: { invitados: newGuest._id } });
+            res.status(200).json({ message: 'Guest added successfully', guest: newGuest });
+        }
     }
     catch (error) {
         console.error(error);
