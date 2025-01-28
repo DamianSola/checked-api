@@ -10,6 +10,7 @@ import eventRoutes from './routes/eventRoutes';
 import userRoutes from './routes/userRoutes';
 import listRoutes from './routes/listRoutes';
 import guestRoutes from './routes/guestRoutes';
+import listen from './routes/listen';
 
 dotenv.config();
 
@@ -30,6 +31,8 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(morgan('dev'));
 // Rutas
+
+app.use('/listen', listen)
 app.use('/events', eventRoutes);
 app.use('/users', userRoutes);
 app.use('/lists', listRoutes)
