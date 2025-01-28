@@ -11,13 +11,14 @@ interface IGuest extends Document {
 
 const guestSchema = new Schema<IGuest>({
   nombre: { type: String, required: true },
-  dni: { type: Number, required: true},
+  dni: { type: Number, required: true },
   estado: { type: String, enum: ['pendiente', 'admitido'], default: 'pendiente' },
   listaId: { type: Schema.Types.ObjectId, ref: 'List', required: true },
   horaIngreso: { type: Date, default: Date.now },
   eventoId: { type: Schema.Types.ObjectId, ref: 'Event', required: true }
 }, { timestamps: true });
 
-// guestSchema.index({ dni: 1, eventoId: 1 });
+// Crear un índice compuesto para asegurar que el dni sea único por eventoId
+guestSchema.index({ dni: 1, eventoId: 1 }, { unique: true });
 
 export default model<IGuest>('Guest', guestSchema);
