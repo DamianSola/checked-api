@@ -13,6 +13,7 @@ const eventRoutes_1 = __importDefault(require("./routes/eventRoutes"));
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const listRoutes_1 = __importDefault(require("./routes/listRoutes"));
 const guestRoutes_1 = __importDefault(require("./routes/guestRoutes"));
+const listen_1 = __importDefault(require("./routes/listen"));
 dotenv_1.default.config();
 const corsOptions = {
     origin: process.env.CORS_URL, // Reemplaza con la URL de tu frontend
@@ -28,6 +29,7 @@ app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.json());
 app.use((0, morgan_1.default)('dev'));
 // Rutas
+app.use('/listen', listen_1.default);
 app.use('/events', eventRoutes_1.default);
 app.use('/users', userRoutes_1.default);
 app.use('/lists', listRoutes_1.default);
